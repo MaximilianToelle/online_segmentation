@@ -10,7 +10,7 @@ import os
 import efficient_track_anything
 
 import torch
-from hydra import compose
+from hydra import compose, initialize
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
 
@@ -128,7 +128,8 @@ def build_efficienttam_camera_predictor(
     hydra_overrides.extend(hydra_overrides_extra)
 
     # Read config and init model
-    cfg = compose(config_name=config_file, overrides=hydra_overrides)
+    with initialize(version_base=None, config_path=".", job_name="efficienttam"):
+        cfg = compose(config_name=config_file, overrides=hydra_overrides)
     OmegaConf.resolve(cfg)
     model = instantiate(cfg.model, _recursive_=True)
     if ckpt_path is not None:
